@@ -42,8 +42,8 @@ class Order(models.Model):
         max_length=3, choices=Currency.choices, default=Currency.RUR
     )
 
+    id = models.PositiveBigIntegerField(primary_key=True)
     fake = models.BooleanField(default=False, null=True, blank=True)
-    order_id = models.PositiveBigIntegerField()
     paymentType = models.CharField(
         max_length=50, choices=PaymentType.choices, default=PaymentType.POSTPAID
     )
@@ -62,7 +62,7 @@ class Order(models.Model):
         verbose_name = "Order"
 
     def __str__(self):
-        return self.order_id
+        return str(self.id)
 
 
 class Item(models.Model):
@@ -115,24 +115,34 @@ class Delivery(models.Model):
         PICKUP = "PICKUP", _("PICKUP")
         POST = "POST", _("POST")
 
-    order = models.OneToOneField("Order", on_delete=models.CASCADE, related_name="delivery")
-    id = models.CharField(max_length=255, primary_key=True)
+    order = models.OneToOneField(
+        Order, on_delete=models.CASCADE, related_name="delivery"
+    )
     deliveryPartnerType = models.CharField(
         max_length=100,
         choices=DeliveryPartner.choices,
         default=DeliveryPartner.YANDEX_MARKET,
     )
-    deliveryServiceId = models.PositiveBigIntegerField()
-    serviceName = models.CharField(max_length=255)
+    deliveryServiceId = models.PositiveBigIntegerField(null=True, blank=True)
+    serviceName = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(
         max_length=255, choices=Type.choices, blank=True, null=True, default=None
     )
+    region = models.OneToOneField("Region", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.region_id)
 
 
 class Shipment(models.Model):
     id = models.PositiveBigIntegerField(primary_key=True)
     shipmentDate = models.DateField()
-    delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, related_name='shipments')
+    delivery = models.ForeignKey(
+        "Delivery", on_delete=models.CASCADE, related_name="shipments"
+    )
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Region(models.Model):
@@ -156,10 +166,14 @@ class Region(models.Model):
         SUBURB = "SUBURB", _("SUBURB")
         VILLAGE = "VILLAGE", _("VILLAGE")
 
-    delivery = models.OneToOneField("Delivery", on_delete=models.CASCADE, related_name='region')
     id = models.PositiveBigIntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     type = models.CharField(
         max_length=200, choices=RegionType.choices, blank=True, null=True
     )
-    parent = models.ForeignKey("self", on_delete=models.DO_NOTHING)
+    parent = models.ForeignKey(
+        "self", on_delete=models.DO_NOTHING, null=True, blank=True
+    )
+
+    def __str__(self):
+        return str(self.id)
