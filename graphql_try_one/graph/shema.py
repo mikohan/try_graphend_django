@@ -1,6 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from .models import TestModel, Order
+from .models import Item, TestModel, Order, Delivery
 
 
 class SnippetType(DjangoObjectType):
@@ -11,6 +11,14 @@ class SnippetType(DjangoObjectType):
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
+
+
+# class DeliveryType(DjangoObjectType):
+#     class Meta:
+#         model = Delivery
+class ItemType(DjangoObjectType):
+    class Meta:
+        model = Item
 
 
 class Query(graphene.ObjectType):

@@ -80,6 +80,7 @@ class Item(models.Model):
     id = models.PositiveBigIntegerField(primary_key=True)
     feedId = models.PositiveBigIntegerField()
     offerId = models.CharField(max_length=255)
+    offerName = models.CharField(max_length=255)
     price = models.FloatField()
     buyerPrice = models.FloatField()
     subsidy = models.FloatField()
@@ -91,6 +92,12 @@ class Item(models.Model):
     sku = models.CharField(max_length=255)
     shopSku = models.CharField(max_length=255)
     warehouseId = models.PositiveBigIntegerField()
+    partnerWarehouseId = models.CharField(
+        max_length=255, blank=True, null=True, default=None
+    )
+
+    def __str__(self):
+        return str(self.offerName)
 
 
 class Promo(models.Model):
@@ -110,7 +117,7 @@ class Delivery(models.Model):
         YANDEX_MARKET = "YANDEX_MARKET", _("YANDEX_MARKET")
         # Divider
 
-    class Type(models.TextChoices):
+    class DevType(models.TextChoices):
         DELIVERY = "DELIVERY", _("DELIVERY")
         PICKUP = "PICKUP", _("PICKUP")
         POST = "POST", _("POST")
@@ -126,19 +133,19 @@ class Delivery(models.Model):
     deliveryServiceId = models.PositiveBigIntegerField(null=True, blank=True)
     serviceName = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(
-        max_length=255, choices=Type.choices, blank=True, null=True, default=None
+        max_length=255, choices=DevType.choices, blank=True, null=True, default=None
     )
-    region = models.OneToOneField("Region", on_delete=models.CASCADE)
+    region = models.ForeignKey("Region", on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.region_id)
+        return str(self.order)
 
 
 class Shipment(models.Model):
     id = models.PositiveBigIntegerField(primary_key=True)
-    shipmentDate = models.DateField()
+    shipmentDate = models.DateField(blank=True, null=True)
     delivery = models.ForeignKey(
-        "Delivery", on_delete=models.CASCADE, related_name="shipments"
+        Delivery, on_delete=models.CASCADE, related_name="shipments"
     )
 
     def __str__(self):
@@ -176,4 +183,4 @@ class Region(models.Model):
     )
 
     def __str__(self):
-        return str(self.id)
+        return str(self.name)

@@ -7,3 +7,4 @@ class Query(snippet_query):
 
 
 schema = graphene.Schema(query=Query)
+print(schema)
