@@ -112,7 +112,7 @@ class Promo(models.Model):
     type = models.CharField(max_length=200, choices=PromoType.choices, default=None)
 
 
-class Delivery(models.Model):
+class DeliveryModel(models.Model):
     class DeliveryPartner(models.TextChoices):
         YANDEX_MARKET = "YANDEX_MARKET", _("YANDEX_MARKET")
         # Divider
@@ -132,7 +132,7 @@ class Delivery(models.Model):
     )
     deliveryServiceId = models.PositiveBigIntegerField(null=True, blank=True)
     serviceName = models.CharField(max_length=255, null=True, blank=True)
-    type = models.CharField(
+    t_attention = models.CharField(
         max_length=255, choices=DevType.choices, blank=True, null=True, default=None
     )
     region = models.ForeignKey("Region", on_delete=models.CASCADE)
@@ -145,7 +145,7 @@ class Shipment(models.Model):
     id = models.PositiveBigIntegerField(primary_key=True)
     shipmentDate = models.DateField(blank=True, null=True)
     delivery = models.ForeignKey(
-        Delivery, on_delete=models.CASCADE, related_name="shipments"
+        DeliveryModel, on_delete=models.CASCADE, related_name="shipments"
     )
 
     def __str__(self):
@@ -153,7 +153,7 @@ class Shipment(models.Model):
 
 
 class Region(models.Model):
-    class RegionType(models.TextChoices):
+    class RegionModelType(models.TextChoices):
         CITY = "CITY", _("CITY")
         CITY_DISTRICT = "CITY_DISTRICT", _("CITY_DISTRICT")
         CONTINENT = "CONTINENT", _("CONTINENT")
@@ -175,8 +175,8 @@ class Region(models.Model):
 
     id = models.PositiveBigIntegerField(primary_key=True)
     name = models.CharField(max_length=255)
-    type = models.CharField(
-        max_length=200, choices=RegionType.choices, blank=True, null=True
+    regionT = models.CharField(
+        max_length=200, choices=RegionModelType.choices, blank=True, null=True
     )
     parent = models.ForeignKey(
         "self", on_delete=models.DO_NOTHING, null=True, blank=True

@@ -1,11 +1,11 @@
 from rest_framework.serializers import ModelSerializer
 
-from graph.models import Delivery, Order
+from graph.models import DeliveryModel, Order
 
 
 class DeliverySerializer(ModelSerializer):
     class Meta:
-        model = Delivery
+        model = DeliveryModel
         fields = ["id", "name", "region", "shipments"]
 
 
