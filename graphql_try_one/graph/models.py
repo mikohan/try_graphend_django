@@ -55,7 +55,6 @@ class Order(models.Model):
     taxSystem = models.CharField(
         max_length=200, choices=TaxSystem.choices, default=None
     )
-    delivery = models.OneToOneField("Delivery", on_delete=models.CASCADE)
 
     notes = models.TextField()
 
@@ -77,6 +76,7 @@ class Item(models.Model):
         VAT_20 = "VAT_20", _("VAT_20")
         VAT_20_120 = "VAT_20_120", _("VAT_20_120")
 
+    order = models.ForeignKey("Order", on_delete=models.CASCADE, related_name="items")
     id = models.PositiveBigIntegerField(primary_key=True)
     feedId = models.PositiveBigIntegerField()
     offerId = models.CharField(max_length=255)
@@ -91,7 +91,6 @@ class Item(models.Model):
     sku = models.CharField(max_length=255)
     shopSku = models.CharField(max_length=255)
     warehouseId = models.PositiveBigIntegerField()
-    promos = models.ForeignKey("Promo", on_delete=models.CASCADE)
 
 
 class Promo(models.Model):
@@ -100,6 +99,7 @@ class Promo(models.Model):
         MARKET_DEAL = "MARKET_DEAL", _("MARKET_DEAL")
         MARKET_COIN = "MARKET_COIN", _("MARKET_COIN")
 
+    item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="promos")
     marketPromoId = models.CharField(max_length=255)
     subsidy = models.FloatField()
     type = models.CharField(max_length=200, choices=PromoType.choices, default=None)
@@ -115,6 +115,7 @@ class Delivery(models.Model):
         PICKUP = "PICKUP", _("PICKUP")
         POST = "POST", _("POST")
 
+    order = models.OneToOneField("Order", on_delete=models.CASCADE, related_name="delivery")
     id = models.CharField(max_length=255, primary_key=True)
     deliveryPartnerType = models.CharField(
         max_length=100,
@@ -122,17 +123,16 @@ class Delivery(models.Model):
         default=DeliveryPartner.YANDEX_MARKET,
     )
     deliveryServiceId = models.PositiveBigIntegerField()
-    shipments = models.ForeignKey("Shipment", on_delete=models.CASCADE)
     serviceName = models.CharField(max_length=255)
     type = models.CharField(
         max_length=255, choices=Type.choices, blank=True, null=True, default=None
     )
-    region = models.OneToOneField("Region", on_delete=models.CASCADE)
 
 
 class Shipment(models.Model):
     id = models.PositiveBigIntegerField(primary_key=True)
     shipmentDate = models.DateField()
+    delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, related_name='shipments')
 
 
 class Region(models.Model):
@@ -156,6 +156,7 @@ class Region(models.Model):
         SUBURB = "SUBURB", _("SUBURB")
         VILLAGE = "VILLAGE", _("VILLAGE")
 
+    delivery = models.OneToOneField("Delivery", on_delete=models.CASCADE, related_name='region')
     id = models.PositiveBigIntegerField(primary_key=True)
     name = models.CharField(max_length=255)
     type = models.CharField(
