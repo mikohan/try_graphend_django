@@ -10,13 +10,9 @@ class DeliverySerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    # delivery = DeliverySerializer
+    delivery = DeliverySerializer
 
     class Meta:
         model = Order
-        fields = [
-            "id",
-            "currency",
-            "delivery",
-        ]
-        depth = 3
+        fields = ["id", "currency", "delivery", "items"]
+        depth = 1

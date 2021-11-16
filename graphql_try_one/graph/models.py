@@ -41,6 +41,13 @@ class Order(models.Model):
     currency = models.CharField(
         max_length=3, choices=Currency.choices, default=Currency.RUR
     )
+    delivery = models.OneToOneField(
+        "DeliveryModel",
+        on_delete=models.CASCADE,
+        related_name="delivery",
+        null=True,
+        blank=True,
+    )
 
     id = models.PositiveBigIntegerField(primary_key=True)
     fake = models.BooleanField(default=False, null=True, blank=True)
@@ -122,9 +129,6 @@ class DeliveryModel(models.Model):
         PICKUP = "PICKUP", _("PICKUP")
         POST = "POST", _("POST")
 
-    order = models.OneToOneField(
-        Order, on_delete=models.CASCADE, related_name="delivery"
-    )
     deliveryPartnerType = models.CharField(
         max_length=100,
         choices=DeliveryPartner.choices,
@@ -138,7 +142,7 @@ class DeliveryModel(models.Model):
     region = models.ForeignKey("Region", on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.order)
+        return str(self.region)
 
 
 class Shipment(models.Model):
