@@ -38,6 +38,42 @@ class Order(models.Model):
         USN = "USN", _("USN")
         USN_MINUS_COST = "USN_MINUS_COST", _("USN_MINUS_COST")
 
+    class Status(models.TextChoices):
+        CANCELLED = "CANCELLED", _("CANCELLED")
+        DELIVERED = "DELIVERED", _("DELIVERED")
+        DELIVERY = "DELIVERY", _("DELIVERY")
+        PICKUP = "PICKUP", _("PICKUP")
+        PROCESSING = "PROCESSING", _("PROCESSING")
+        PENDING = "PENDING", _("PENDING")
+        UNPAID = "UNPAID", _("UNPAID")
+
+    class SubStatus(models.TextChoices):
+        STARTED = "STARTED", _("STARTED")
+        ANTIFRAUD = "ANTIFRAUD", _("ANTIFRAUD")
+        DELIVERY_SERVICE_UNDELIVERED = "DELIVERY_SERVICE_UNDELIVERED", _(
+            "DELIVERY_SERVICE_UNDELIVERED"
+        )
+        PENDING_EXPIRED = "PENDING_EXPIRED", _("PENDING_EXPIRED")
+        PROCESSING_EXPIRED = "PROCESSING_EXPIRED", _("PROCESSING_EXPIRED")
+        REPLACING_ORDER = "REPLACING_ORDER", _("REPLACING_ORDER")
+        RESERVATION_EXPIRED = "RESERVATION_EXPIRED", _("RESERVATION_EXPIRED")
+        RESERVATION_FAILED = "RESERVATION_FAILED", _("RESERVATION_FAILED")
+        SHOP_FAILED = "SHOP_FAILED", _("SHOP_FAILED")
+        SHOP_PENDING_CANCELLED = "SHOP_PENDING_CANCELLED", _("SHOP_PENDING_CANCELLED")
+        WAREHOUSE_FAILED_TO_SHIP = "WAREHOUSE_FAILED_TO_SHIP", _(
+            "WAREHOUSE_FAILED_TO_SHIP"
+        )
+        USER_CHANGED_MIND = "USER_CHANGED_MIND", _("USER_CHANGED_MIND")
+        USER_NOT_PAID = "USER_NOT_PAID", _("USER_NOT_PAID")
+        USER_REFUSED_DELIVERY = "USER_REFUSED_DELIVERY", _("USER_REFUSED_DELIVERY")
+        USER_REFUSED_PRODUCT = "USER_REFUSED_PRODUCT", _("USER_REFUSED_PRODUCT")
+        USER_REFUSED_QUALITY = "USER_REFUSED_QUALITY", _("USER_REFUSED_QUALITY")
+        USER_UNREACHABLE = "USER_UNREACHABLE", _("USER_UNREACHABLE")
+        PICKUP_SERVICE_RECEIVED = "PICKUP_SERVICE_RECEIVED", _(
+            "PICKUP_SERVICE_RECEIVED"
+        )
+        PICKUP_USER_RECEIVED = "PICKUP_USER_RECEIVED", _("PICKUP_USER_RECEIVED")
+
     currency = models.CharField(
         max_length=3, choices=Currency.choices, default=Currency.RUR
     )
@@ -64,6 +100,9 @@ class Order(models.Model):
     )
 
     notes = models.TextField()
+
+    status = models.CharField(max_length=50, choices=Status.choices, default=None)
+    substatus = models.CharField(max_length=50, choices=SubStatus.choices, default=None)
 
     class Meta:
         verbose_name = "Order"
