@@ -83,8 +83,10 @@ class OrderSerializer(ModelSerializer):
             "taxSystem",
             "delivery",
             "items",
+            "status",
+            "substatus",
         ]
-        depth = 3
+        depth = 1
 
     def create(self, validated_data):
         delivery = validated_data.pop("delivery")
@@ -148,4 +150,29 @@ class OrderSerializer(ModelSerializer):
             )
             it.save()
 
+        return order
+
+
+class OrderUpdateStatusSerializer(ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["id", "status", "substatus"]
+        extra_kwargs = {
+            "id": {"read_only": False},
+            "id": {"validators": []},
+            "delivery": {"read_only": False},
+            "delivery": {"validators": []},
+            "items": {"read_only": False},
+            "items": {"validators": []},
+        }
+
+    def create(self, validated_data):
+        print(validated_data)
+        order_id = validated_data.get("id")
+        status = validated_data.get("status")
+        substatus = validated_data.get("substatus")
+        order = Order.objects.first()  # get(id=order_id)
+        # order.status = status
+        # order.substatus = substatus
+        # order.save()
         return order

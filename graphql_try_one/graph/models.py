@@ -101,8 +101,12 @@ class Order(models.Model):
 
     notes = models.TextField()
 
-    status = models.CharField(max_length=50, choices=Status.choices, default=None)
-    substatus = models.CharField(max_length=50, choices=SubStatus.choices, default=None)
+    status = models.CharField(
+        max_length=50, choices=Status.choices, null=True, blank=True, default=None
+    )
+    substatus = models.CharField(
+        max_length=50, choices=SubStatus.choices, null=True, blank=True, default=None
+    )
 
     class Meta:
         verbose_name = "Order"
