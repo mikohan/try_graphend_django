@@ -41,13 +41,13 @@ class Order(models.Model):
     currency = models.CharField(
         max_length=3, choices=Currency.choices, default=Currency.RUR
     )
-    delivery = models.OneToOneField(
-        "DeliveryModel",
-        on_delete=models.CASCADE,
-        related_name="delivery",
-        null=True,
-        blank=True,
-    )
+    # delivery = models.OneToOneField(
+    #     "DeliveryModel",
+    #     on_delete=models.CASCADE,
+    #     related_name="delivery",
+    #     null=True,
+    #     blank=True,
+    # )
 
     id = models.PositiveBigIntegerField(primary_key=True)
     fake = models.BooleanField(default=False, null=True, blank=True)
@@ -89,16 +89,18 @@ class Item(models.Model):
     offerId = models.CharField(max_length=255)
     offerName = models.CharField(max_length=255)
     price = models.FloatField()
-    buyerPrice = models.FloatField()
-    subsidy = models.FloatField()
+    buyerPrice = models.FloatField(null=True, blank=True)
+    subsidy = models.FloatField(null=True, blank=True)
     count = models.IntegerField()
     delivery = models.BooleanField()
-    params = models.CharField(max_length=255)
-    vat = models.CharField(max_length=255, choices=Vat.choices, default=None)
-    fulfilmentShopId = models.PositiveBigIntegerField()
+    params = models.CharField(max_length=255, blank=True, null=True)
+    vat = models.CharField(
+        max_length=255, choices=Vat.choices, default=None, blank=True, null=True
+    )
+    fulfilmentShopId = models.PositiveBigIntegerField(blank=True, null=True)
     sku = models.CharField(max_length=255)
     shopSku = models.CharField(max_length=255)
-    warehouseId = models.PositiveBigIntegerField()
+    warehouseId = models.PositiveBigIntegerField(blank=True, null=True)
     partnerWarehouseId = models.CharField(
         max_length=255, blank=True, null=True, default=None
     )
@@ -140,6 +142,9 @@ class DeliveryModel(models.Model):
         max_length=255, choices=DevType.choices, blank=True, null=True, default=None
     )
     region = models.ForeignKey("Region", on_delete=models.CASCADE)
+    order = models.OneToOneField(
+        Order, on_delete=models.CASCADE, related_name="delivery"
+    )
 
     def __str__(self):
         return str(self.region)
