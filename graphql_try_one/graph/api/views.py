@@ -6,6 +6,12 @@ from rest_framework import status
 from .serializers import OrderSerializer, OrderUpdateStatusSerializer
 from rest_framework.renderers import JSONRenderer
 import json
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
+YM_TOKEN = env("YM_TOKEN")
+print(YM_TOKEN)
 
 
 class EmberJSONRenderer(JSONRenderer):
@@ -34,18 +40,23 @@ class OrderUpdateStatusAPI(APIView):
         order_id = request.data.get("order")["id"]
         stat = request.data.get("order")["status"]
         substatus = request.data.get("order")["substatus"]
-        try:
-            qs = Order.objects.get(id=order_id)
-            qs.status = stat
-            qs.substatus = substatus
-            qs.save()
+        ym_token = request.META["HTTP_AUTHORIZATION"]
+        print(ym_token)
+        if ym_token == YM_TOKEN:
+            try:
+                qs = Order.objects.get(id=order_id)
+                qs.status = stat
+                qs.substatus = substatus
+                qs.save()
 
-            response = {"id": qs.id, "status": qs.status, "substatus": qs.substatus}
+                response = {"id": qs.id, "status": qs.status, "substatus": qs.substatus}
 
-            return Response(
-                json.dumps(response),
-                status=status.HTTP_200_OK,
-            )
-        except:
+                return Response(
+                    json.dumps(response),
+                    status=status.HTTP_200_OK,
+                )
+            except:
 
-            return Response("Bad Request", status=status.HTTP_400_BAD_REQUEST)
+                return Response("Bad Request", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Not Authorized", status=status.HTTP_401_UNAUTHORIZED)
